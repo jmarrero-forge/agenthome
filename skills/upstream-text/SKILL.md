@@ -11,6 +11,6 @@ Keep PR descriptions and comments short and factual. The operator adds the human
 
 **Comments:** a few lines, verdict first. Put a long analysis on the thread in a collapsed `<details>` block, never in a page outside the thread: text linked from a public thread is public too. If the run's environment doesn't name the operator's login, no one counts as having summoned the bot as the operator.
 
-**Attribution:** end every pull request description, review and comment you write with the line `Generated-by: https://github.com/cgwalters/#llms`, and never name a model, provider or tool in them: nearly every text is the work of several.
+**Attribution:** end every pull request description, review and comment you write with the line `Generated-by: https://github.com/jmarrero-bot#llms`, and never name a model, provider or tool in them: nearly every text is the work of several.
 
 Commit messages follow the `commit-messages` skill.
