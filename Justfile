@@ -1,17 +1,17 @@
 default:
     @just --list
 
-install-tools:
-    node scripts/install-tools.mjs
+# Offline configuration lint and positive/negative fixtures; Python stdlib only.
+check-config:
+    python3 tests/check_config.py
 
-check: check-roles
-    node --test tests/install-tools.test.mjs tests/opencode-config.test.mjs tests/agent-rules.test.mjs tests/eval.test.mjs tests/roles.test.mjs
+# Offline discovery regression tests, including recorded provider/broker fixtures.
+check-models:
+    python3 -B -m unittest discover -s tests -p 'test_models.py'
 
-render-roles:
-    node scripts/render-roles.mjs
+# Opt-in network discovery; BROKER_BASE_URL (including /v1) and BROKER_API_KEY required.
+# May send up to eight minimal inference probes when /models is unavailable.
+discover-models *args:
+    python3 -B tools/discover_models.py {{args}}
 
-check-roles:
-    node scripts/render-roles.mjs --check
-
-check-install:
-    node scripts/check-install.mjs
+check: check-config check-models
