@@ -2,7 +2,7 @@
 
 Parity map: the test names below retain the names from tests/config.rs,
 tests/opencode_config.rs and tests/rules.rs. Their negative fixtures retain
-source order (32 role/tier, 9 provider + 3 runner, 7 + 18 rules mutations),
+source order (32 role/tier, 9 provider + 3 runner, 8 + 24 rules mutations),
 with later provider fixtures appended.
 Eval serialization tests now belong to agent-board, not configuration validation.
 """
@@ -34,11 +34,11 @@ ROLES = {
     "role-worker": ("Edit", "luna"),
     "role-review": ("ReadOnly", "sol"),
 }
-ATTRIBUTION = "Generated-by: https://github.com/cgwalters/#llms"
+ATTRIBUTION = "Generated-by: https://github.com/jmarrero-bot#llms"
 NOTICE = "> This text is LLM generated."
 NOTICE_EXEMPT = r"(^|/)(AGENTS|CLAUDE|SKILL)\.md$|^workflow/|^\.github/|^roles/"
 FORBIDDEN = [
-    r"\bcgwalters(-bot)?\b", "bot-land", "bot-pr", "bot-operator",
+    r"\b(cgwalters|jmarrero)(-bot)?\b", "bot-land", "bot-pr", "bot-operator",
     "bot-git", r"bootstrap\.md", "worker-preamble",
 ]
 AGENT_BOARD_COMMIT = "9d36c74f5b8a71f94d9a95583f473591f37ec001"
@@ -831,6 +831,7 @@ class RulesTests(unittest.TestCase):
         agents = "Load the `demo` skill when testing.\n"
         check_rules(agents, good)
         check_rules(agents + "See https://github.com/cgwalters-forge/agenthome.\n", good)
+        check_rules(agents + "See https://github.com/jmarrero-forge/agenthome.\n", good)
         bads = [
             ("x\n" * (MAX_AGENTS_LINES + 1), good),
             (agents, {"demo/SKILL.md": skill("other")}),
@@ -839,12 +840,14 @@ class RulesTests(unittest.TestCase):
             (agents + "Load the `missing` skill too.\n", good),
             (agents + f"`{NOTICE}` Ask cgwalters.\n", good),
             (agents + f"`{ATTRIBUTION}` Ask cgwalters.\n", good),
+            (agents + f"`{ATTRIBUTION}` Ask jmarrero.\n", good),
         ]
-        for word in ("cgwalters", "CGWalters-bot", "cgwalters-bot", "bot-land", "bot-pr",
+        for word in ("cgwalters", "CGWalters-bot", "cgwalters-bot", "jmarrero", "JMarrero-bot", "jmarrero-bot",
+                     "bot-land", "bot-pr",
                      "bot-operator", "bot-git", "bootstrap.md", "worker-preamble"):
             bads.append((agents + f"See {word} here.\n", good))
             bads.append((agents, {**good, "demo/notes.md": f"Run {word}.\n"}))
-        self.assertEqual(len(bads), 25)
+        self.assertEqual(len(bads), 32)
         for index, (text, files) in enumerate(bads):
             with self.subTest(fixture=index + 1), self.assertRaises(ValueError):
                 check_rules(text, files)
